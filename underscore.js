@@ -396,10 +396,7 @@ const purchasesByMonth = _.groupBy(purchases, 'month'); // Use groupBy to group 
 
 // Bonus Points
 // const totalByMonth = 0; 
-const totalByMonth = _.reduce(purchasesByMonth, function(month, price) {
-  month[price] = (month[price] || 0) + 1;
-  return month;
-}, {});
+const totalByMonth = _.reduce(purchasesByMonth, function(memo, num){ return memo + num; }, 0);
 
 // Use the groupded purchasesByMonth and reduce to create a totalByMonth object.
 
@@ -432,19 +429,23 @@ function slowFibonnaci(n) {
 // millisecond keep increasing in (I recommend increments of 5 or so) until it's
 // taking a few seconds to complete.
 let slowN = 30;
-// console.time('slowFibonnaci:' + slowN)
-// console.log(slowFibonnaci(slowN));
-// console.timeEnd('slowFibonnaci:' + slowN);
+console.time('slowFibonnaci:' + slowN)
+console.log(slowFibonnaci(slowN));
+console.timeEnd('slowFibonnaci:' + slowN);
 
 let fastN = 1000;
 
-let fastFibonnaci = 0; // use memoize to create a fast fibonnaci.  Use the same
+let fastFibonnaci = _.memoize(function(n){
+  return n < 2 ? n: fastFibonnaci(n - 1) + fastFibonnaci(n - 2);
+ }) 
+ 
+ // use memoize to create a fast fibonnaci.  Use the same
 // recursve structure that the slowFibonnaci is using, but have it be memoized
 // so that it'll remeber the previous times it's been called and increase the
 
-// console.time('fastFibonnaci:' + fastN)
-// console.log(fastFibonnaci(fastN));
-// console.timeEnd('fastFibonnaci:' + fastN)
+console.time('fastFibonnaci:' + fastN)
+console.log(fastFibonnaci(fastN));
+console.timeEnd('fastFibonnaci:' + fastN)
 
 // We can also use memoize on axios calls so that we only need to make the
 // request to the server once.
@@ -465,7 +466,13 @@ let getDeathstar = function(n){
 
 // getPersonApi `https://swapi.co/api/people/${n}`
 
-let getJedi = // Use Memoize to remeber the previous calls made to the server
+let getJedi = _.memoize((n)=>{
+  return axios.get(`https://swapi.co/api/people/${n}`)
+    .then(e => {
+    console.log(e.data);
+    return e.data;
+  })
+})// Use Memoize to remember the previous calls made to the server
 // then compare the times for the first and second calls of both the getJedi and
 // getDeathstar functions
 // There are no unit tests for this section. But play around with the
@@ -473,22 +480,22 @@ let getJedi = // Use Memoize to remeber the previous calls made to the server
 // the time it takes for various parts of your code to run.  This can be
 // helpful in finding slow parts of your code that you want to improve.
 
-// console.time('getJedi')
-// getJedi(1).then(e=>{
-//   console.log(e.data)
-//   console.timeEnd('getJedi')
-// });
+console.time('getJedi')
+getJedi(1).then(e=>{
+  console.log(e.data)
+  console.timeEnd('getJedi')
+});
 
 setTimeout(()=>{
-  // console.time('getDeathstar')
-  // getDeathstar(9).then(e=>{
-  //   console.log(e.data)
-  //   console.timeEnd('getDeathstar')
-  // });
+  console.time('getDeathstar')
+  getDeathstar(9).then(e=>{
+    console.log(e.data)
+    console.timeEnd('getDeathstar')
+  });
 
-  // console.time('getJedi')
-  // getJedi(1).then(e=>{
-  //   console.log(e.data)
-  //   console.timeEnd('getJedi')
-  // });
+  console.time('getJedi')
+  getJedi(1).then(e=>{
+    console.log(e.data)
+    console.timeEnd('getJedi')
+  });
 }, 2000)
