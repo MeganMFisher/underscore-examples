@@ -396,9 +396,15 @@ const purchasesByMonth = _.groupBy(purchases, 'month'); // Use groupBy to group 
 
 // Bonus Points
 // const totalByMonth = 0; 
-const totalByMonth = _.reduce(purchasesByMonth.January, function(memo, num){ 
-  return {price: (memo.price + num.price) }
-  });
+const totalByMonth = _.map(purchasesByMonth, e => {
+  
+  return _.reduce(e, function(memo, num){ 
+  return {month: memo.month, price: (memo.price + num.price) }
+   });
+  
+  })
+  
+  console.log(totalByMonth)
   
 
 // Use the groupded purchasesByMonth and reduce to create a totalByMonth object.
